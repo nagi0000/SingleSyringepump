@@ -25,10 +25,10 @@
 #define DIR 8
 #define STEP 9
 #define SLEEP 13
-#define START_PIN 2
-#define STOP_PIN 3
-#define REVERSE_PIN 4
-#define MODE_PIN 5
+#define START_STOP_PIN 2
+#define REVERSE_PIN 3
+#define UP_PIN 4
+#define DOWN_PIN 5
 #define ENDSTOP_PIN 6
 
 // Serial port settings

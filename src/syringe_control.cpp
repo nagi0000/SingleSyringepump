@@ -46,6 +46,18 @@ void reversePump()
     startPump();
 }
 
+void switchRun()
+{
+    if (stepper.getCurrentState() == stepper.STOPPED)
+    {
+        startPump();
+    }
+    else
+    {
+        stopPump();
+    }
+}
+
 void calcRPM(float flowrate, float *rpm)
 {
     *rpm = (flowrate / (PI * sq(RADIUS))) / LEAD;

@@ -22,11 +22,11 @@ void setup()
 {
     Serial.begin(BAUD_RATE);
 
-    pinMode(START_PIN, INPUT_PULLUP);
-    pinMode(STOP_PIN, INPUT_PULLUP);
-    pinMode(ENDSTOP_PIN, INPUT_PULLUP);
-    pinMode(MODE_PIN, INPUT_PULLUP);
+    pinMode(START_STOP_PIN, INPUT_PULLUP);
     pinMode(REVERSE_PIN, INPUT_PULLUP);
+    pinMode(UP_PIN, INPUT_PULLUP);
+    pinMode(DOWN_PIN, INPUT_PULLUP);
+    pinMode(ENDSTOP_PIN, INPUT_PULLUP);
 
     dir = 1;
     flowrate = 10;
@@ -72,15 +72,16 @@ void loop()
 
     if ((millis() - last_button_press) > DEBOUNCE_DELAY)
     {
-        if (digitalRead(START_PIN) == LOW)
+        if (digitalRead(START_STOP_PIN) == LOW)
         {
-            startPump();
-            last_button_press = millis();
-        }
-
-        if (digitalRead(STOP_PIN) == LOW)
-        {
-            stopPump();
+            if (stepper.getCurrentState() == stepper.STOPPED)
+            {
+                startPump();
+            }
+            else
+            {
+                stopPump();
+            }
             last_button_press = millis();
         }
 
@@ -90,9 +91,55 @@ void loop()
             last_button_press = millis();
         }
 
-        if (digitalRead(MODE_PIN) == LOW)
+        if (digitalRead(UP_PIN) == LOW)
         {
-            last_button_press = millis();
+            unsigned long lastPressedTime = millis();
+            while (digitalRead(UP_PIN) == LOW)
+            {
+                unsigned long currentTime = millis();
+
+                if ((currentTime - lastPressedTime) > 2000)
+                {
+                    flowrate = flowrate + 10;
+                }
+                else if ((currentTime - lastPressedTime) > 1000)
+                {
+                    flowrate = flowrate + 1;
+                }
+                else
+                {
+                    flowrate = flowrate + 0.1;
+                }
+                setFlowrate(flowrate);
+                delay(100);
+            }
+        }
+
+        if (digitalRead(DOWN_PIN) == LOW)
+        {
+             last_button_press= millis();
+            unsigned long lastPressedTime = millis();
+
+            while (digitalRead(DOWN_PIN) == LOW)
+            {
+                unsigned long currentTime = millis();
+
+                if ((currentTime - lastPressedTime) > 2000)
+                {
+                    flowrate = flowrate - 10;
+                }
+                else if ((currentTime - lastPressedTime) > 1000)
+                {
+                    flowrate = flowrate - 1;
+                }
+                else
+                {
+                    flowrate = flowrate - 0.1;
+                }
+                setFlowrate(flowrate);
+                delay(100);
+            }
+
         }
 
         if (digitalRead(ENDSTOP_PIN) == LOW)
